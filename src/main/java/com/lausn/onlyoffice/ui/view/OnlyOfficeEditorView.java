@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,8 +24,13 @@ public class OnlyOfficeEditorView extends VerticalLayout {
 	private static final String DOC_DOWNLOAD_URL = "https://static.onlyoffice.com/assets/docs/samples/demo.docx";
 	private static final String SAVE_CALLBACK_URL = "http://localhost:8081/api/save/demo.docx";
 
-	private final String secret = "bsLfyr4Jl86EpyKrAT8q";
+	private final String secret;
+	private Logger log = LoggerFactory.getLogger(OnlyOfficeEditorView.class.getName());
 
+	
+	public OnlyOfficeEditorView(@Value("${onlyoffice.secret.key}")  String secret) {
+		this.secret=secret;
+	}
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		super.onAttach(attachEvent);
@@ -37,7 +46,7 @@ public class OnlyOfficeEditorView extends VerticalLayout {
 		String config;
 		try {
 			config = getEditorPage();
-
+			log.info("Config:{}", config);
 			Algorithm algorithm = Algorithm.HMAC256(secret);
 			String token = JWT.create()
 					.withPayload(config)
@@ -52,7 +61,6 @@ public class OnlyOfficeEditorView extends VerticalLayout {
 							 var config = %s;
 							  config.token='%s';
 							 console.log(config);
-
 					        new DocsAPI.DocEditor('docEditorContainer', config);
 					    };
 					    document.head.appendChild(script);
@@ -62,7 +70,6 @@ public class OnlyOfficeEditorView extends VerticalLayout {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	public String getEditorPage() throws Exception {
@@ -78,6 +85,9 @@ public class OnlyOfficeEditorView extends VerticalLayout {
 
 		Map<String, Object> permissions = new HashMap<>();
 		permissions.put("edit", true);
+		permissions.put("download", true);
+		permissions.put("print", true);
+		permissions.put("save", true); // ✅ required to show Save button
 		document.put("permissions", permissions);
 
 		Map<String, Object> user = new HashMap<>();
@@ -88,12 +98,16 @@ public class OnlyOfficeEditorView extends VerticalLayout {
 		editorConfig.put("mode", "edit");
 		editorConfig.put("lang", "en");
 		editorConfig.put("user", user);
+		editorConfig.put("callbackUrl", SAVE_CALLBACK_URL);
+		// Enable autosave and show Save button
+		Map<String, Object> customization = new HashMap<>();
+		customization.put("forcesave", true); // manually triggered save
+		editorConfig.put("customization", customization);
 
 		Map<String, Object> config = new HashMap<>();
 		config.put("document", document);
 		config.put("documentType", "word");
 		config.put("editorConfig", editorConfig);
-
 		// Build separate JS object string
 		String jsonConfig = new ObjectMapper().writeValueAsString(config);
 		return jsonConfig;

@@ -28,7 +28,7 @@ This project demonstrates how to integrate [Vaadin Flow](https://vaadin.com) (Ja
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/vaadin-onlyoffice-integration.git
+git clone https://github.com/bishwajitcse/vaadin-onlyoffice-integration
 cd vaadin-onlyoffice-integration
 ```
 
