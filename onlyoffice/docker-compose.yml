@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.9
+    container_name: onlyoffice-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+
+  redis:
+    image: redis
+    container_name: onlyoffice-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  onlyoffice-documentserver:
+    image: onlyoffice/documentserver
+    container_name: onlyoffice-documentserver
+    restart: always
+    ports:
+      - "8081:80"
+    depends_on:
+      - rabbitmq
+      - redis
+    environment:
+      - AMQP_URL=amqp://rabbitmq
+      - REDIS_SERVER_HOST=redis
+      - JWT_SECRET=bsLfyr4Jl86EpyKrAT8q

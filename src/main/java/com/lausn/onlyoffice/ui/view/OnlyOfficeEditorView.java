@@ -15,9 +15,10 @@ import com.vaadin.flow.router.Route;
 @Route("/doc-editor")
 public class OnlyOfficeEditorView extends VerticalLayout {
 
+	private static final long serialVersionUID = 1L;
 	private static final String ONLYOFFICE_SERVER_URL = "http://localhost:8080"; // OnlyOffice Document Server
 	private static final String DOC_DOWNLOAD_URL = "https://static.onlyoffice.com/assets/docs/samples/demo.docx";
-	private static final String SAVE_CALLBACK_URL = "http://localhost:8081/api/save/hello1.docx";
+	private static final String SAVE_CALLBACK_URL = "http://localhost:8081/api/save/demo.docx";
 
 	private final String secret = "bsLfyr4Jl86EpyKrAT8q";
 
