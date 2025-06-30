@@ -28,7 +28,7 @@ public class FileController {
 	
 	@PostMapping("/save/{filename}")
 	public ResponseEntity<?> saveFile(@PathVariable String filename, @RequestBody Map<String, Object> callback) throws IOException {
-		System.out.println("📥 Callback received: " + callback);
+		log.info("📥 Callback received: " + callback);
 
 		int status = (int) callback.get("status");
 
